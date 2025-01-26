@@ -1,3 +1,3 @@
-public class SymDuplicationException extends Exception {
+public class SymDuplicateException extends Exception {
 
 }

@@ -1,27 +1,28 @@
 public class P1 {
-    public static void main() {
-        Sym number = new Sym("number");
-        Sym letter = new Sym("letter");
-        Sym emoji = new Sym("emoji");
+    public static void main(String[] args) {
 
+        Sym emoji = new Sym("emoji");
         SymTab table = new SymTab();
 
         // table should contain an empty HashMap at index 0
+        table.print();
         try {
             table.removeScope();
         } catch (SymTabEmptyException e) {
             System.out.println("removeScope on non-empty table failed!");
         }
+        
+        // table should now be completely empty
+        table.print();
 
         // removeScope on empty list test
         try {
             table.removeScope();
         } catch (SymTabEmptyException e) {
-            System.out.println("Exception properly thrown, removeScope called when table list is empty");
+            // this is the expected result, continue
         }
 
         table.addScope();
-
         // addDecl null param test
         try {
             table.addDecl(null, emoji);
@@ -42,34 +43,64 @@ public class P1 {
         try {
             table.addDecl("smirk", emoji);
         } catch (SymTabEmptyException e) {
-            System.out.println("Exception properly thrown, addDecl called when table list is empty");
+            // this is the expected result, continue
         } catch (Exception e) {
             System.out.println("Unexpected exception thrown!");
         }
+
+        table.addScope();
+        try {
+            table.addDecl("smirk", emoji);
+        } catch (Exception e) {
+            System.out.println("Unexpected exception thrown!");
+        }
+        table.print();
 
         // addDecl with duplicate key test
         try {
             table.addDecl("smirk", emoji);
         } catch (SymDuplicateException e) {
-            System.out.println("Exception properly thrown, addDecl called with existing key");
+            // this is the expected result, continue
         } catch (Exception e) {
             System.out.println("Unexpected exception thrown!");
         }
 
-        // setup for lookupLocal/lookupGlobal test
+        // setup for lookupLocal/lookupGlobal on non-empty table test
         table.addScope();
         try {
             table.addDecl("smile", emoji);
         } catch (Exception e) {
             System.out.println("Unexpected exception thrown!");
         }
-
+        table.print();
         try {
             if (emoji == table.lookupLocal("smirk")) {
-                // TODO
+                System.out.println("lookupLocal failed! smirk is not in the first entry of the table");
             }
-        } catch (SymTabEmptyException e) {
+            if (emoji != table.lookupGlobal("smirk")) {
+                System.out.println("lookupGlobal failed! smirk is in the table");
+            }
+            if (emoji != table.lookupLocal("smile")) {
+                System.out.println("lookupLocal failed! smile is the first entry in the table");
+            }
+        } catch (Exception e) {
+            System.out.println("Unexpected exception thrown!");
+        }
 
+        // setup for lookupLocal/lookupGlobal on empty table test
+        try {
+            table.removeScope();
+            table.removeScope();
+        } catch (Exception e) {
+            System.out.println("Unexpected exception thrown!");
+        }
+
+        try {
+            Sym placeholder1 = table.lookupLocal("smirk");
+            Sym placeholder2 = table.lookupGlobal("smirk");
+            System.out.println("lookupLocal and lookupGlobal failed to throw SymTabEmptyException!");
+        } catch (SymTabEmptyException e) {
+            // this is the expected result, continue
         }
     }
 }
