@@ -1,0 +1,19 @@
+1. Each scope in your SymTab is a HashMap. Java also has a TreeMap implementation of the Map interface. 
+The HashMap is implemented using a hashtable, while the TreeMap is implemented using a red-black tree. 
+Why is the HashMap preferable in this situation? When would a TreeMap be preferable to a HashMap?
+
+In this situation a HashMap is preferable because of the efficient O(1) lookup and storage. As opposed to O(log n) operations
+for TreeMap. For example in the lookup methods (local + global), determining if there is a key entry in our SymTab would be much faster.
+I imagine that a TreeMap might be advantageous when we're dealing with the scope portion of our compiler, where certain entries we might
+be interested in the "maximum"/"minimum" Syms at a given point (e.g. determining if Sym A is part of Sym B's subtree or something like that) to
+determine which Sym takes precedence. Or potentially when we care more about the sort order of Syms, maybe we'd want to process symbols in a certain
+order - I'd imagine it'd basically be impossible to do that with a HashMap.
+
+2. When implementing the List in your SymTab, you had a choice between an ArrayList and a LinkedList. 
+Which implementation did you choose? Why is the implementation you chose preferable to the alternative?
+
+I chose the ArrayList because of the general O(1) flexibility with its operations. I strayed away from LinkedList since it may be more expensive in the same
+operations (e.g. adding node to the end of list, lookup, etc.). While the current state of SymTab (addScope + removeScope) only requires looking at the first
+entry in a list, I have a feeling the ArrayList choice will come in handy later when we might be interested in keeping track of which index in the list applies
+to which block of code (e.g. index 0 is global scope, index 1 is a block, index 2 is another block, etc.) - and jump from one scope to another non-adjacent one
+(e.g. from index 2 to index 0 in my previous example), but I could be very wrong in that assumption :).
