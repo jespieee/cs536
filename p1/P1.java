@@ -2,6 +2,11 @@ public class P1 {
     public static void main(String[] args) {
 
         Sym emoji = new Sym("emoji");
+
+        if (emoji.getType() != "emoji" || emoji.toString() != "emoji") {
+            System.out.println("Sym emoji should be of type emoji");
+        }
+
         SymTab table = new SymTab();
 
         // table should contain an empty HashMap at index 0
