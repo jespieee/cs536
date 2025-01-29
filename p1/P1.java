@@ -1,23 +1,13 @@
 /**
  * P1
  *
- * This is a class whose sole purpose is to test the SymTab class, which
- * provides the following operations:
- *     no-arg constructor                  -- creates a list with one hashmap entry
- *     void addDecl(String name, Sym sym)  -- attempts to add a new entry to the first hashmap
- *                                            entry in the list
- *     void addScope()                     -- adds a new empty Hashmap to the front of the list
- *     Sym lookupLocal(String name)        -- attempts to retrieve the first Sym mapped to the
- *                                            key of 'name' from the first hashmap entry
- *     Sym lookupGlobal(String name)       -- attempts to retrieve the first Sym mapped to the
- *                                            key of 'name' from any hashmap entry
- *     void removeScope()                  -- attempts to remove the first hashmap entry from the
- *                                            list
- *     void print()                        -- prints the contents of the list, purely for debugging
+ * This is a class whose sole purpose is to test the SymTab/Sym class.
+ * For a list of SymTab and Sym operations, refer to their respective
+ * file headers.
  *
  * This code tests every SymTab operation, including both correct and
  * bad calls to the operations that can throw an exception.
- * It produces output if a test fails, as well as when an update to the contents of 
+ * It produces output if a test fails, as well as for updates to the contents of 
  * the SymTab change to allow for visual confirmation.
  */
 
