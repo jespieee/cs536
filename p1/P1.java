@@ -15,15 +15,43 @@ public class P1 {
     public static void main(String[] args) {
 
         Sym emoji = new Sym("emoji");
+        Sym doubleSym = new Sym("double");
+        Sym voidSym = new Sym("void");
+        Sym boolSym = new Sym("bool");
+        Sym intSym = new Sym("int");
 
-        if (emoji.getType() != "emoji" || emoji.toString() != "emoji") {
-            System.out.println("Sym emoji should be of type emoji");
+        // This section contains the test output to match the expected output
+        SymTab table = new SymTab();
+        table.print();
+
+        try {
+            table.addDecl("aaa", boolSym);
+            table.addDecl("bbb", intSym);
+            table.addScope();
+            table.addDecl("ccc", voidSym);
+            table.addScope();
+            table.addDecl("ddd", doubleSym);
+        } catch (Exception e) {
+            System.out.println("Unexpected exception thrown!");
         }
 
-        SymTab table = new SymTab();
+        table.print();
+
+        for (int i = 0; i < 3; ++i) {
+            try {
+                table.removeScope();
+                table.print();
+            } catch (Exception e) {
+                System.out.println("Unexpected exception thrown!");
+            }
+        }
+
+        // SECTION END
+
+        // This section contains exception and other edge case tests
+        table.addScope();
 
         // table should contain an empty HashMap at index 0
-        table.print();
         try {
             table.removeScope();
         } catch (SymTabEmptyException e) {
@@ -31,7 +59,6 @@ public class P1 {
         }
         
         // table should now be completely empty
-        table.print();
 
         // removeScope on empty list test
         try {
@@ -42,8 +69,6 @@ public class P1 {
 
         table.addScope();
         // table should contain an empty HashMap at index 0
-        table.print();
-
         // addDecl null param test
         try {
             table.addDecl(null, emoji);
@@ -75,7 +100,6 @@ public class P1 {
         } catch (Exception e) {
             System.out.println("Unexpected exception thrown!");
         }
-        table.print();
 
         // addDecl with duplicate key test
         try {
@@ -93,7 +117,6 @@ public class P1 {
         } catch (Exception e) {
             System.out.println("Unexpected exception thrown!");
         }
-        table.print();
         try {
             if (emoji == table.lookupLocal("smirk")) {
                 System.out.println("lookupLocal failed! smirk is not in the first entry of the table");
