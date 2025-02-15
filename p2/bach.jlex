@@ -62,6 +62,11 @@ class CharNum {
 
 DIGIT=        [0-9]
 WHITESPACE=   [\040\t]
+LETTER=       [a-zA-Z]
+ID=           {LETTER}({LETTER}|{DIGIT}|_)*
+NEWLINE=      \n
+STRING_CHAR=  [^\"\\\n]
+ESCAPED_CHAR= \\\\|\\n|\\s|\\t|\'|\"  
 
 %implements java_cup.runtime.Scanner
 %function next_token
@@ -75,16 +80,28 @@ return new Symbol(sym.EOF);
 
 %%
 
-{DIGIT}+  { // NOTE: the following computation of the integer value does
-            //       NOT check for overflow. This must be changed.
-            int val = Integer.parseInt(yytext());
-            Symbol S = new Symbol(sym.INTLIT,
-                             new IntLitTokenVal(yyline+1, CharNum.num, val));
+{DIGIT}+  {
+            Symbol S = null;
+            try {
+                int val = Integer.parseInt(yytext());
+                S = new Symbol(sym.INTLIT,
+                            new IntLitTokenVal(yyline+1, CharNum.num, val));
+            } catch (Exception e) {
+                ErrMsg.warn(yyline+1, CharNum.num, 
+                            "using max integer value: literal too large");
+                S = new Symbol(sym.INTLIT, 
+                            new IntLitTokenVal(yyline+1, CharNum.num, Integer.MAX_VALUE));
+            }
             CharNum.num += yytext().length();
             return S;
           }
 
-\n        { CharNum.num = 1; }
+{ID}      { 
+            CharNum.num += yytext().length(); 
+            return new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
+          }
+
+{NEWLINE} { CharNum.num = 1; }
 
 {WHITESPACE}+  { CharNum.num += yytext().length(); }
 
@@ -92,7 +109,32 @@ return new Symbol(sym.EOF);
             CharNum.num++;
             return S;
           }
-        
+
+\"({STRING_CHAR}|{ESCAPED_CHAR})*\" {
+    // Check for unterminated string literal
+    if (yytext().charAt(yytext().length() - 1) != '"') {
+        ErrMsg.warn(yyline+1, CharNum.num, "ignoring string literal: unterminated");
+        CharNum.num += yytext().length();
+        return null;
+    }
+
+    // Check for bad escaped characters
+    if (yytext().contains("\\") && !yytext().matches("\"({STRING_CHAR}|{ESCAPED_CHAR})*\"")) {
+        if (yytext().contains("\n")) {
+            ErrMsg.warn(yyline+1, CharNum.num, "ignoring string literal: contains bad escaped character and unterminated");
+        } else {
+            ErrMsg.warn(yyline+1, CharNum.num, "ignoring string literal: contains bad escaped character");
+        }
+        CharNum.num += yytext().length();
+        return null;
+    }
+
+    // Valid string literal
+    Symbol S = new Symbol(sym.STRLIT, new StrLitTokenVal(yyline+1, CharNum.num, yytext().substring(1, yytext().length() - 1)));
+    CharNum.num += yytext().length();
+    return S;
+}
+
 .         { ErrMsg.fatal(yyline+1, CharNum.num,
                          "ignoring illegal character: " + yytext());
             CharNum.num++;
