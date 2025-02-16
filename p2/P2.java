@@ -17,8 +17,54 @@ public class P2 {
     
         // ADD CALLS TO OTHER TEST METHODS HERE
         testAllErrors();
+        testCharAndLineNum();
 
     }
+
+    /**
+     * testCharAndLineNum
+     *
+     * Open and read from file charLine.in
+     * For each token read, write the corresponding -
+     * 
+     * charNum
+     * lineNum
+     * 
+     * to charLine.out. 
+     * The goal of this method is to ensure the scanner properly
+     * recognizes character and line numbers.
+     * 
+     * This means that using diff charLine.in charLine.out is not
+     * meant to be the way to validate the scanner's behavior, unlike in
+     * the testAllTokens method - and the charLine.out file should
+     * be used instead.
+     */
+    private static void testCharAndLineNum() throws IOException {
+		// open input and output files
+		FileReader inFile = null;
+		PrintWriter outFile = null;
+		try {
+			inFile = new FileReader("charLine.in");
+			outFile = new PrintWriter(new FileWriter("charLine.out"));
+		} catch (FileNotFoundException ex) {
+			System.err.println("File charLine.in not found.");
+			System.exit(-1);
+		} catch (IOException ex) {
+			System.err.println("charLine.out cannot be opened.");
+			System.exit(-1);
+		}
+		// create and call the scanner
+		Yylex scanner = new Yylex(inFile);
+		Symbol token = scanner.next_token();
+		while (token.sym != sym.EOF) {
+			//print char number, line number, and the symbol number
+			outFile.println(((TokenVal)token.value).charNum + "(" 
+					+ ((TokenVal)token.value).lineNum + ")    sym # : " + token.sym);
+			token = scanner.next_token();
+		}
+		outFile.close();
+
+	}
 
     /**
      * testAllErrors
@@ -34,7 +80,8 @@ public class P2 {
      * 
      * This means that using diff errorTokens.in errorTokens.out is not
      * meant to be the way to validate the scanner's behavior, unlike in
-     * the testAllTokens method.
+     * the testAllTokens method - and the terminal output should be
+     * used instead.
      */
     private static void testAllErrors() throws IOException {
         // open input and output files

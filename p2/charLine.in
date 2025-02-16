@@ -1,0 +1,9 @@
+void bool integer TRUE FALSE struct input disp if else while return
+{ } ( ) , . = : + - * / ^ < > ++ -- & | == ^= <= >= <- ->
+ID _ID
+"string line 4, char 1" "string line 4 char 25" "string line 4 char 49"
+"string line 5, char 1"   "string line 5 char 27"
+"string line 6, char 1, newline symbol \n "  "string line 6, char 46"
+%% asdasdasd
+# asdasdasd
+1234

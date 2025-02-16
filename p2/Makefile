@@ -47,4 +47,4 @@ clean:
 	rm -f *~ *.class bach.jlex.java
 
 cleantest:
-	rm -f allTokens.out
+	rm -f *.out
