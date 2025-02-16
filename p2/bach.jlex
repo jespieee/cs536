@@ -65,8 +65,8 @@ UNDERSCORE =  [_]
 QUOTE =       [\"]
 NOTQUOTE =    [^\"]
 BACKSLASH =   [\\]
-ESCAPECHAR =  [nst'"\\]
-NOTESCAPECHAR = [^nst'"\\]
+ESCAPECHAR =  [nst'\"\\]
+NOTESCAPECHAR = [^nst'\"\\]
 SINGLECHAR =  [^\n\"\\]
 PERC =        [%]
 SHARP =       [#] 
@@ -74,10 +74,6 @@ DIGIT=        [0-9]
 WHITESPACE=   [\040\t]
 ID=           ({LETTER}|{UNDERSCORE})({LETTER}|{UNDERSCORE}|{DIGIT})*
 COMMENT=      ({PERC}{PERC}|{SHARP}).*
-STRINGLIT = {QUOTE} ({SINGLECHAR}|{BACKSLASH}{ESCAPECHAR})* {QUOTE}
-TERMBADSTR = {QUOTE} ({SINGLECHAR}|{BACKSLASH}{NOTESCAPECHAR})+ {QUOTE}
-NOTERMBADSTR = {QUOTE} ({SINGLECHAR}|{BACKSLASH}{NOTESCAPECHAR})+ [^\n]
-NOTERMSTR = {QUOTE} ({SINGLECHAR}|{BACKSLASH}{ESCAPECHAR})*
 
 %implements java_cup.runtime.Scanner
 %function next_token
@@ -91,24 +87,23 @@ return new Symbol(sym.EOF);
 
 %%
 
-{STRINGLIT} {
-    System.out.println("Currently on line " + yyline + " and text is " + yytext());
+{QUOTE}(({SINGLECHAR})*{BACKSLASH}{ESCAPECHAR})*({SINGLECHAR})*{QUOTE} {
     Symbol S = new Symbol(sym.STRINGLIT, new StrLitTokenVal(yyline+1, CharNum.num, yytext()));
     CharNum.num += yytext().length();
     return S;
 }
 
-{TERMBADSTR} {
+{QUOTE}(({SINGLECHAR})*{BACKSLASH}{NOTESCAPECHAR})+({SINGLECHAR})*{QUOTE} {
     ErrMsg.fatal(yyline + 1, CharNum.num, "ignoring string literal: contains bad escaped character");
     CharNum.num += yytext().length();
 }
 
-{NOTERMBADSTR} {
+{QUOTE}(({SINGLECHAR})*{BACKSLASH}{NOTESCAPECHAR})+({SINGLECHAR})* {
     ErrMsg.fatal(yyline + 1, CharNum.num, "ignoring string literal: contains bad escaped character and unterminated");
     CharNum.num = 1;
 }
 
-{NOTERMSTR} {
+{QUOTE}(({SINGLECHAR})*{BACKSLASH}{ESCAPECHAR})*({SINGLECHAR})* {
     ErrMsg.fatal(yyline + 1, CharNum.num, "ignoring string literal: unterminated");
     CharNum.num = 1;
 }
