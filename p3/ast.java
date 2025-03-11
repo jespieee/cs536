@@ -213,10 +213,10 @@ class FuncBodyNode extends ASTnode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-        p.println(" {");
+        p.println(" [");
         myDeclList.unparse(p, indent);
         myStmtList.unparse(p, indent);
-        p.println("}");
+        p.println("]");
     }
 
     // 2 children
@@ -270,10 +270,10 @@ class FuncDeclNode extends DeclNode {
         myType.unparse(p, indent);
         p.print(" ");
         myId.unparse(p, indent);
-        p.print("(");
+        p.print("[");
         myFormalsList.unparse(p, indent);
-        p.print(")");
-        myBody.unparse(p, indent);
+        p.print("]");
+        myBody.unparse(p, indent + 4);
     }
 
     // 4 children
@@ -306,12 +306,12 @@ class StructDeclNode extends DeclNode {
         myDeclList = declList;
     }
 
-    public void unparse(PrintWriter p, int indent) {
+    public void unparse(PrintWriter p, int indent) {  
         p.print("struct ");
         myId.unparse(p, indent);
-        p.println(" {");
+        p.println(" [");
         myDeclList.unparse(p, indent + 4);
-        p.println("};");
+        p.println("]");
     }
 
     // 2 children
@@ -381,7 +381,7 @@ class AssignStmtNode extends StmtNode {
 
     public void unparse(PrintWriter p, int indent) {
         myAssign.unparse(p, indent);
-        p.println(";");
+        p.println(".");
     }
 
     // 1 child
@@ -396,7 +396,7 @@ class PostIncStmtNode extends StmtNode {
     public void unparse(PrintWriter p, int indent) {
         myExp.unparse(p, indent);
         p.print("++");
-        p.println(";");
+        p.println(".");
     }
 
     // 1 child
@@ -411,7 +411,7 @@ class PostDecStmtNode extends StmtNode {
     public void unparse(PrintWriter p, int indent) {
         myExp.unparse(p, indent);
         p.print("--");
-        p.println(";");
+        p.println(".");
     }
 
     // 1 child
@@ -508,7 +508,7 @@ class ReadStmtNode extends StmtNode {
         // ->
         p.print("->");
         myExp.unparse(p, indent);
-        p.println(";");
+        p.println(".");
     }
 
     // 1 child (actually can only be an IdNode or a StructAccessNode)
@@ -524,7 +524,7 @@ class WriteStmtNode extends StmtNode {
         // <-
         p.print("<-");
         myExp.unparse(p, indent);
-        p.println(";");
+        p.println(".");
     }
 
     // 1 child
@@ -538,7 +538,7 @@ class CallStmtNode extends StmtNode {
 
     public void unparse(PrintWriter p, int indent) {
         myCall.unparse(p, indent);
-        p.println(";");
+        p.println(".");
     }
 
     // 1 child
@@ -556,7 +556,7 @@ class ReturnStmtNode extends StmtNode {
             p.print(" ");
             myExp.unparse(p, indent);
         }
-        p.println(";");
+        p.println(".");
     }
 
     // 1 child

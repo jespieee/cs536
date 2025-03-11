@@ -86,6 +86,7 @@ non terminal LinkedList       structBody;
 non terminal LinkedList       formalsList;
 non terminal FormalsListNode  formals;
 non terminal FormalDeclNode   formalDecl;
+non terminal FuncDeclNode     funcDecl;
 non terminal FuncBodyNode     funcBody;
 non terminal CallExpNode      funcCall;
 non terminal LinkedList       stmtList;
@@ -111,7 +112,7 @@ start with program;
  *
  * NOTE: add more grammar rules below
  */
-program         ::= declList: d
+program         ::= declList:d
                 {: RESULT = new ProgramNode(new DeclListNode(d));
                 :}
                 ;
@@ -154,10 +155,16 @@ declList        ::= declList:dl decl:d
                 :}
                 ;
 
-decl            ::= varDecl:v
-                {: RESULT = v;
-                :}
-                ;
+decl          ::= varDecl:v
+              {: RESULT = v;
+              :}
+              | structDecl:s 
+              {: RESULT = s;
+              :}
+              | funcDecl:f
+              {: RESULT = f;
+              :}
+              ;
 
 varDeclList     ::= varDeclList:vl varDecl:v
                 {:
@@ -173,13 +180,16 @@ varDeclList     ::= varDeclList:vl varDecl:v
 varDecl         ::= type:t id:i DOT
                 {: RESULT = new VarDeclNode(t, i, VarDeclNode.NON_STRUCT);
                 :}
+                | STRUCT id:i1 id:i2 DOT
+                {: RESULT = new VarDeclNode(new StructNode(i1), i2, 0);
+                :}
                 ;
 
 structDecl      ::= STRUCT id:i LSQUARE structBody:sb RSQUARE
                 {: RESULT = new StructDeclNode(i, new DeclListNode(sb));
                 :}
                 ;
-                
+
 structBody      ::= structBody:sb varDecl:v
                 {: sb.addLast(v);
                 RESULT = sb;
@@ -215,6 +225,11 @@ formalDecl    ::= type:t id:i
               :}
               ;
 				
+funcDecl      ::= type:t id:i formals:f funcBody:fb
+              {: RESULT = new FuncDeclNode(t, i, f, fb);
+              :}
+              ;	
+
 funcBody      ::= LSQUARE varDeclList:vd stmtList:sl RSQUARE
               {: RESULT = new FuncBodyNode(new DeclListNode(vd), new StmtListNode(sl));
               :}
@@ -343,7 +358,7 @@ term          ::= loc:l
               ;
 
 funcCall      ::=  id:i LPAREN RPAREN
-              {: RESULT = new CallExpNode(i);
+              {: RESULT = new CallExpNode(i, null);
               :}
               | id:i LPAREN actualList:l RPAREN
               {: RESULT = new CallExpNode(i, new ExpListNode(l));
