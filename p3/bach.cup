@@ -73,26 +73,27 @@ terminal                WHILE;
  * NOTE: You will need to add more nonterminals to this list as you
  *       add productions to the grammar below.
  */
+
 non terminal ProgramNode      program;
-non terminal ExpNode          loc;
-non terminal TypeNode         type;
-non terminal IdNode           id;
 non terminal LinkedList       declList;
 non terminal DeclNode         decl;
-non terminal LinkedList       varDeclList;
 non terminal VarDeclNode      varDecl;
+non terminal TypeNode         type;
+non terminal IdNode           id;
+non terminal LinkedList       structBody; 
 non terminal StructDeclNode   structDecl;
-non terminal LinkedList       structBody;
-non terminal LinkedList       formalsList;
-non terminal FormalsListNode  formals;
+non terminal LinkedList       varDeclList; 
+non terminal ExpNode          loc;
 non terminal FormalDeclNode   formalDecl;
+non terminal LinkedList	      formalsList;
 non terminal FuncDeclNode     funcDecl;
 non terminal FuncBodyNode     funcBody;
-non terminal CallExpNode      funcCall;
-non terminal LinkedList       stmtList;
 non terminal StmtNode         stmt;
+non terminal LinkedList       stmtList;
+non terminal FormalsListNode  formals;
 non terminal AssignExpNode    assignExp;
 non terminal ExpNode          exp;
+non terminal CallExpNode      funcCall;
 non terminal ExpNode          term;
 non terminal LinkedList       actualList;
 
@@ -101,10 +102,10 @@ non terminal LinkedList       actualList;
 precedence right ASSIGN;
 precedence left OR;
 precedence left AND;
+precedence left COLON;
 precedence nonassoc LESS, GREATER, LESSEQ, GREATEREQ, EQUALS, NOTEQ;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE;
-precedence left COLON;
 precedence left NOT;
 start with program;
 
@@ -181,7 +182,7 @@ varDecl         ::= type:t id:i DOT
                 {: RESULT = new VarDeclNode(t, i, VarDeclNode.NON_STRUCT);
                 :}
                 | STRUCT id:i1 id:i2 DOT
-                {: RESULT = new VarDeclNode(new StructNode(i1), i2, 0);
+                {: RESULT = new VarDeclNode(new StructNode(i1), i2, 1);
                 :}
                 ;
 
@@ -287,15 +288,6 @@ assignExp     ::= loc:l ASSIGN exp:e
 exp           ::= assignExp:a
               {: RESULT = a;
               :}
-              | exp:e1 AND exp:e2
-              {: RESULT = new AndNode(e1, e2);
-              :}
-              | exp:e1 OR exp:e2
-              {: RESULT = new OrNode(e1, e2);
-              :}
-              | NOT exp:e
-              {: RESULT = new NotNode(e);
-              :}
               | exp:e1 PLUS exp:e2
               {: RESULT = new PlusNode(e1, e2);
               :}
@@ -308,30 +300,39 @@ exp           ::= assignExp:a
               | exp:e1 DIVIDE exp:e2
               {: RESULT = new DivideNode(e1, e2);
               :}
-              | MINUS term:t
-              {: RESULT = new UnaryMinusNode(t);
+              | NOT exp:e
+              {: RESULT = new NotNode(e);
+              :}
+              | exp:e1 AND exp:e2
+              {: RESULT = new AndNode(e1, e2);
+              :}
+              | exp:e1 OR exp:e2
+              {: RESULT = new OrNode(e1, e2);
               :}
               | exp:e1 EQUALS exp:e2
               {: RESULT = new EqualsNode(e1, e2);
-              :}
+              :} 
               | exp:e1 NOTEQ exp:e2
               {: RESULT = new NotEqNode(e1, e2);
-              :}
-              | exp:e1 GREATER exp:e2
-              {: RESULT = new GreaterNode(e1, e2);
-              :}
-              | exp:e1 GREATEREQ exp:e2
-              {: RESULT = new GreaterEqNode(e1, e2);
-              :}
+              :} 
               | exp:e1 LESS exp:e2
               {: RESULT = new LessNode(e1, e2);
-              :}
+              :} 
+              | exp:e1 GREATER exp:e2
+              {: RESULT = new GreaterNode(e1, e2);
+              :} 
               | exp:e1 LESSEQ exp:e2
               {: RESULT = new LessEqNode(e1, e2);
-              :}
+              :} 
+              | exp:e1 GREATEREQ exp:e2
+              {: RESULT = new GreaterEqNode(e1, e2);
+              :} 
+              | MINUS term:t
+              {: RESULT = new UnaryMinusNode(t);
+              :} 
               | term:t
-              {: RESULT = t;
-              :}
+              {:RESULT = t;
+              :} 
               ;
 
 term          ::= loc:l
