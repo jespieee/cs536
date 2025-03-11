@@ -1,0 +1,179 @@
+/**********************************************************************
+ Java CUP specification for a parser for bach programs
+ **********************************************************************/
+
+import java_cup.runtime.*;
+import java.util.*;
+
+/* The code below redefines method syntax_error to give better error messages
+ * than just "Syntax error"
+ */
+parser code {:
+
+public void syntax_error(Symbol currToken) {
+    if (currToken.value == null) {
+        ErrMsg.fatal(0,0, "Syntax error at end of file");
+    }
+    else {
+        ErrMsg.fatal(((TokenVal)currToken.value).lineNum,
+                     ((TokenVal)currToken.value).charNum,
+                     "Syntax error");
+    }
+    System.exit(-1);
+}
+:};
+
+
+/* Terminals (tokens returned by the scanner) */
+terminal                BOOLEAN;
+terminal                INTEGER;
+terminal                VOID;
+terminal                STRUCT;
+terminal IdTokenVal     ID;
+terminal IntLitTokenVal INTLIT;
+terminal StrLitTokenVal STRINGLIT;
+terminal                TRUE;
+terminal                FALSE;
+terminal                LCURLY;
+terminal                RCURLY;
+terminal                LPAREN;
+terminal                RPAREN;
+terminal                LSQUARE;
+terminal                RSQUARE;
+terminal                COLON;
+terminal                COMMA;
+terminal                DOT;
+terminal                AND;
+terminal                OR;
+terminal                NOT;
+terminal                PLUS;
+terminal                MINUS;
+terminal                TIMES;
+terminal                DIVIDE;
+terminal                EQUALS;
+terminal                NOTEQ;
+terminal                GREATER;
+terminal                GREATEREQ;
+terminal                LESS;
+terminal                LESSEQ;
+terminal                READOP;
+terminal                WRITEOP;
+terminal                ASSIGN;
+terminal                PLUSPLUS;
+terminal                MINUSMINUS;
+terminal                RETURN;
+terminal                INPUT;
+terminal                DISPLAY;
+terminal                IF;
+terminal                ELSE;
+terminal                WHILE;
+
+/* Nonterminals
+ *
+ * NOTE: You will need to add more nonterminals to this list as you
+ *       add productions to the grammar below.
+ */
+non terminal ProgramNode      program;
+non terminal ExpNode          loc;
+non terminal TypeNode         type;
+non terminal IdNode           id;
+non terminal LinkedList       declList;
+non terminal DeclNode         decl;
+non terminal LinkedList       varDeclList;
+non terminal VarDeclNode      varDecl;
+non terminal StructDeclNode   structDecl;
+non terminal LinkedList       structBody;
+non terminal LinkedList       formalsList;
+non terminal FormalsListNode  formals;
+non terminal FormalDeclNode   formalDecl;
+non terminal FnDeclNode       fnDecl;
+non terminal FnBodyNode       fnBody;
+non terminal CallExpNode      fncall;
+non terminal LinkedList       stmtList;
+non terminal StmtNode         stmt;
+non terminal AssignNode       assignExp;
+non terminal ExpNode          exp;
+non terminal ExpNode          term;
+non terminal LinkedList       actualList;
+
+/* NOTE: Add precedence and associativity declarations here */
+
+precedence right ASSIGN;
+precedence left OR;
+precedence left AND;
+precedence nonassoc LESS, GREATER, LESSEQ, GREATEREQ, EQUALS, NOTEQ;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+precedence left COLON;
+precedence left NOT;
+start with program;
+
+/* Grammar with actions
+ *
+ * NOTE: add more grammar rules below
+ */
+program         ::= declList: d
+                {: RESULT = new ProgramNode(new DeclListNode(d));
+                :}
+                ;
+
+loc             ::= id:i
+                {:   
+                    RESULT = i;
+                :}
+                | loc:l DOT id:i
+                {:
+                    RESULT = new ExpNode(l, i);
+                :}
+                ;
+
+type            ::= INTEGER
+                {: 
+                    RESULT = new IntegerNode();
+                :}
+                | BOOLEAN
+                {: 
+                    RESULT = new BooleanNode();
+                :}
+                | VOID
+                {: 
+                    RESULT = new VoidNode();
+                :}
+                ;
+
+id              ::= ID:i
+                {: RESULT = new IdNode(i.lineNum, i.charNum, i.idVal);
+                :}
+                ;
+
+declList        ::= declList:dl decl:d
+                {: dl.addLast(d);
+                   RESULT = dl;
+                :}
+                | /* epsilon */
+                {: RESULT = new LinkedList<DeclNode>();
+                :}
+                ;
+
+decl            ::= varDecl:v
+                {: RESULT = v;
+                :}
+                ;
+
+varDeclList     ::= varDeclList:vl varDecl:v
+                {:
+                    vl.addLast(v);
+                    RESULT = vl;
+                :}
+                | /* epsilon */
+                {:
+                    RESULT = new LinkedList<VarDeclNode>();
+                :}
+                ;
+
+varDecl         ::= type:t id:i DOT
+                {: RESULT = new VarDeclNode(t, i, VarDeclNode.NON_STRUCT);
+                :}
+                ;
+
+				
