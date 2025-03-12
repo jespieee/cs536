@@ -46,10 +46,13 @@ void funcParam[integer a, integer b] [
         a = a + 1.
         b = b * 3 + 1.
     }
+
+    if (b) { x = y. } else { x = c. }
+    if (b == -1) { x = 4+3*5-y. while (c) { y = y*2+x. } } else { x = 0. }
+
+    input -> a.
+    disp <- b.
 ]
 
-
-
-if (b) { x = y. } else { x = c. }
 %% asd comment
 # asd comment
