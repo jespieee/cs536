@@ -826,7 +826,7 @@ class IdNode extends ExpNode {
         boolean success = true;
 
         if (!category.equals(Category.FUNC) && type.equals("void")) {
-            ErrMsg.fatal(myLineNum, myCharNum, "Identifier multiply-declared");
+            ErrMsg.fatal(myLineNum, myCharNum, "Non-function declared void");
             success = false;
         }
 

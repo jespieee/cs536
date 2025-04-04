@@ -1,0 +1,66 @@
+# project spec example
+struct Point [
+    integer x.
+    integer y.
+]
+integer f[integer x, boolean b] [ ]
+void g[] [
+    integer a.
+    boolean b.
+    struct Point p.
+    p:x = a.
+    b = a == 3.
+    f(a + p:y*2, b).
+    g().
+]
+
+# VERY basic tests
+
+integer one.
+struct myStructure [
+    integer two.
+    boolean ahoy.
+]
+
+void myFunction[] []
+
+boolean otherFunction[integer one, integer two] [
+    one = 25.
+    while (one == 25) {
+        two = 7.
+        one = 24.
+    }
+]
+
+integer main[] [
+    integer one.
+    integer two.
+    one = 1.
+    if (one == 1) {
+        integer one.
+        if (one ^= 8) {
+            integer one.
+        }
+    }
+    if (two == 1) {
+        integer c.
+    }
+    else {
+        integer d.
+    }
+
+    while (one == 1) {
+        while (two == 2) {
+            integer one.
+            integer two.
+            one = 15.
+            two = 17.
+            one = two.
+            input -> two.
+            disp <- two.
+        }
+    }
+]
+
+%% asd comment
+# asd comment

@@ -1,3 +1,4 @@
+# project spec example
 struct Point [
     integer x.
     integer y.
@@ -12,3 +13,70 @@ void g[] [
     f(a + p:y*2, b).
     g().
 ]
+
+# VERY basic tests
+
+integer one.
+struct myStructure [
+    integer two.
+    boolean ahoy.
+]
+
+void myFunction[] []
+
+%% Error cases %%
+
+# Identifier multiply-declared
+
+%% single declaration cases
+boolean ahoy.
+boolean ahoy.
+integer ahoy.
+struct ahoy [
+    integer blah.
+]
+void ahoy[] []
+
+%% nested declaration cases
+struct boo [
+    integer ahoy.
+    boolean ahoy.
+]
+integer aha[] [
+    integer ahoy.
+    boolean ahoy.
+]
+
+# Identifier undeclared
+integer undeclaredTester[] [
+    one = undecl.
+    randomFunction().
+    bing = bong + bing.
+    one = bing - one.
+]
+
+# Colon-access of non-struct type
+boolean colonAccess[] [
+    hypotheticalStruct:x = a.
+    b = hypotheticalStruct:x.
+    c = hypotheticalStruct:x:y:z.
+]
+
+# Name of struct field invalid
+boolean structFieldFunc[] [
+    integer a.
+    a = a:hypotheticalField.
+]
+
+# Non-function declared void
+void voidVariable.
+struct voidStruct [
+    void voidField.
+]
+integer voidFunc[] [
+    void voidVar.
+]
+
+# Name of struct type invalid
+struct undecl huh.
+struct undecl what.
